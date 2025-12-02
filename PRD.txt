@@ -1,0 +1,121 @@
+
+1. Latar Belakang
+Secara tradisional, sistem perpustakaan sekolah berfokus murni pada administrasi (peminjaman dan pengembalian). Hal ini seringkali gagal menarik minat siswa untuk membaca. Proyek ini bertujuan untuk mentransformasi perpustakaan sekolah dari sekadar tempat meminjam buku menjadi pusat aktivitas yang menarik dengan mengintegrasikan sistem gamifikasi.
+
+2. Tujuan Proyek
+Meningkatkan Keterlibatan Siswa: Mendorong siswa untuk lebih sering mengunjungi perpustakaan dan meminjam buku melalui sistem poin, misi, dan penghargaan.
+
+Menyederhanakan Administrasi: Memberikan alat digital bagi pustakawan untuk mengelola koleksi buku, data anggota, dan riwayat peminjaman secara efisien.
+
+Menerapkan Akuntabilitas: Menciptakan sistem yang jelas untuk melacak denda (keterlambatan atau kerusakan) secara transparan.
+
+3. Persona Pengguna (Aktor)
+Ada dua peran utama dalam sistem ini:
+
+A. Pustakawan (Admin)
+
+Kebutuhan: Memiliki kontrol penuh atas data perpustakaan (buku, anggota) dan elemen gamifikasi (misi). Perlu alat yang efisien untuk mencatat sirkulasi buku dan mengelola denda.
+
+Akses: Dashboard Admin.
+
+B. Siswa (Anggota)
+
+Kebutuhan: Cara mudah untuk melihat ketersediaan buku, melacak peminjaman mereka, dan berpartisipasi dalam tantangan (misi) untuk mendapatkan poin dan bersaing dengan teman.
+
+Akses: Portal Siswa.
+
+4. Detail Fitur dan Kebutuhan
+Dokumen ini membagi fitur berdasarkan peran pengguna dan sistem inti.
+
+4.1. Fitur Pustakawan (Admin Dashboard)
+Pustakawan memiliki hak akses penuh (CRUD - Create, Read, Update, Delete) atas data master.
+
+Manajemen Anggota (Siswa):
+
+Create: Mendaftarkan anggota baru dengan input: Nama, NIS (Nomor Induk Sekolah), dan Kelas.
+
+Read: Melihat daftar semua anggota, mencari anggota berdasarkan Nama atau NIS.
+
+Update: Mengedit detail anggota (misal: jika siswa naik kelas).
+
+Delete: Menghapus data anggota (misal: jika siswa lulus).
+
+Manajemen Buku (Inventaris):
+
+Create: Menambahkan data buku baru (Judul, Penulis, Penerbit, Tahun, Jumlah Stok, Kategori, dll.).
+
+Read: Melihat daftar semua buku, mencari buku berdasarkan Judul atau Penulis.
+
+Update: Mengedit detail buku.
+
+Delete: Menghapus data buku dari sistem.
+
+Manajemen Misi (Gamifikasi):
+
+Create: Membuat misi baru.
+
+Contoh: Nama Misi: "Senin Produktif".
+
+Kondisi: Pinjam > 2 buku PADA HARI Senin.
+
+Reward: 50 Poin.
+
+Read: Melihat daftar semua misi yang aktif atau nonaktif.
+
+Update: Mengedit detail, kondisi, atau reward misi.
+
+Delete: Menghapus misi.
+
+Manajemen Sirkulasi (Peminjaman & Pengembalian):
+
+Peminjaman: Mencatat buku yang dipinjam oleh siswa (memindai ID siswa/NIS, lalu memindai ID buku).
+
+Pengembalian: Pustakawan memverifikasi buku yang dikembalikan.
+
+Pustakawan memilih kondisi pengembalian: (1) Normal, (2) Telat, (3) Rusak.
+
+Sistem secara otomatis menghitung denda jika "Telat" atau "Rusak" dipilih.
+
+Manajemen Denda:
+
+Melihat daftar denda yang belum dibayar oleh siswa.
+
+Menandai denda sebagai "Lunas" setelah siswa membayar.
+
+4.2. Fitur Siswa (Portal Anggota)
+Siswa dapat melihat data tetapi tidak dapat mengubah data master.
+
+Dashboard / Profil:
+
+Melihat informasi pribadi (Nama, NIS, Kelas).
+
+Melihat Total Poin yang dimiliki saat ini.
+
+Melihat Achievements (Penghargaan) yang telah didapat (misal: "Badge: Pembaca Rajin" setelah mengumpulkan 1000 poin).
+
+Katalog Buku:
+
+Mencari dan melihat daftar buku yang tersedia di perpustakaan.
+
+Melihat status ketersediaan buku (Tersedia / Sedang Dipinjam).
+
+Riwayat Peminjaman:
+
+Melihat daftar buku yang sedang dipinjam beserta tanggal jatuh tempo.
+
+Melihat riwayat buku yang pernah dipinjam.
+
+Fitur Gamifikasi:
+
+Misi: Melihat daftar misi yang tersedia untuk diselesaikan dan progresnya.
+
+Leaderboard: Melihat papan peringkat (misal: 10 Siswa Teratas) berdasarkan Poin.
+
+4.3. Sistem Inti (Backend Logic)
+Sistem Poin: Poin diberikan secara otomatis oleh sistem ketika trigger (pemicu) misi terpenuhi. Trigger divalidasi saat Pustakawan mencatat transaksi (misal: saat Pustakawan mencatat peminjaman, sistem mengecek "apakah hari ini Senin?" dan "apakah jumlah buku > 2?").
+
+Sistem Denda:
+
+Sistem harus memiliki pengaturan (di Dashboard Pustakawan) untuk menentukan besaran denda (misal: Rp 1.000/hari keterlambatan, Rp 10.000/buku rusak).
+
+Denda otomatis ditambahkan ke akun siswa ketika Pustakawan memverifikasi pengembalian sebagai "Telat" atau "Rusak".
