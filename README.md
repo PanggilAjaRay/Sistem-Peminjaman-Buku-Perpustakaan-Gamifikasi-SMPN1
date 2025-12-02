@@ -1,59 +1,120 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Peminjaman Buku Perpustakaan Gamifikasi SMPN 1 Prembun
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem informasi perpustakaan berbasis web ini dirancang untuk Sekolah Menengah Pertama (SMP) dengan mengintegrasikan elemen **gamifikasi** guna meningkatkan minat baca siswa. Dibangun menggunakan **Laravel 12** dan **Livewire 3**, aplikasi ini menawarkan pengalaman pengguna yang interaktif dan responsif (SPA-like experience).
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Gamifikasi (Siswa)
+Fitur ini bertujuan memotivasi siswa untuk lebih sering meminjam dan membaca buku.
+* **Sistem Level & Poin:** Siswa mendapatkan XP/Poin setiap kali meminjam atau mengembalikan buku tepat waktu. Didukung oleh *library* `cjmellor/level-up`.
+* **Leaderboard (Papan Peringkat):** Menampilkan peringkat siswa berdasarkan total poin yang dikumpulkan untuk memacu kompetisi sehat.
+* **Misi (Missions):** Tantangan tertentu yang dapat diselesaikan siswa untuk mendapatkan poin bonus.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2. Sirkulasi & Transaksi
+* **Peminjaman & Pengembalian:** Pencatatan transaksi peminjaman buku dengan validasi stok.
+* **Denda Otomatis:** Sistem secara otomatis menghitung denda (Fine) jika buku dikembalikan melewati tenggat waktu.
+* **Riwayat (History):** Siswa dapat melihat rekam jejak buku yang pernah dipinjam.
 
-## Learning Laravel
+### 3. Manajemen Admin
+* **Dashboard Admin:** Ringkasan statistik perpustakaan.
+* **Manajemen Buku:** Tambah, edit, hapus data buku beserta stoknya.
+* **Manajemen Anggota:** Kelola data siswa/anggota perpustakaan.
+* **Approval:** Fitur persetujuan untuk transaksi sirkulasi tertentu.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🛠️ Teknologi
 
-## Laravel Sponsors
+Proyek ini menggunakan tumpukan teknologi (tech stack) modern:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+* **Backend:** PHP 8.2+, Laravel 12
+* **Frontend:** Livewire 3.7 (Full-stack components), Tailwind CSS 4.0, Vite
+* **Database:** SQLite (Default, mudah diganti ke MySQL/PostgreSQL)
+* **Paket Tambahan:** `cjmellor/level-up` (Gamification system)
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## ⚙️ Prasyarat Instalasi
 
-## Contributing
+Sebelum memulai, pastikan komputer Anda telah terinstal:
+* PHP >= 8.2
+* Composer
+* Node.js & NPM
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 📦 Instalasi & Penggunaan
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Ikuti langkah-langkah berikut untuk menjalankan proyek di komputer lokal (Localhost):
 
-## Security Vulnerabilities
+1.  **Clone Repositori**
+    ```bash
+    git clone [https://github.com/username/sistem-perpustakaan-gamifikasi.git](https://github.com/username/sistem-perpustakaan-gamifikasi.git)
+    cd sistem-perpustakaan-gamifikasi
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2.  **Setup Otomatis**
+    Jalankan perintah berikut untuk menginstal dependensi (PHP & Node), menyalin environment file, membuat key, dan migrasi database:
+    ```bash
+    composer setup
+    ```
 
-## License
+3.  **Jalankan Server Development**
+    Gunakan perintah berikut untuk menjalankan Laravel server dan Vite secara bersamaan:
+    ```bash
+    composer dev
+    ```
+    Aplikasi dapat diakses di: `http://localhost:8000`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 📂 Struktur Folder Penting
+
+* `app/Livewire/` : Logika utama aplikasi (Controller/Component).
+    * `AdminDashboard.php` : Halaman utama admin.
+    * `CirculationForm.php` : Logika peminjaman/pengembalian.
+    * `StudentPortal.php` & `StudentLeaderboard.php` : Fitur sisi siswa.
+* `app/Models/` : Representasi data database.
+    * `Book.php`, `Member.php`, `Transaction.php`, `Mission.php`.
+* `database/migrations/` : Skema struktur database.
+* `resources/views/livewire/` : Tampilan antarmuka (Frontend Blade).
+
+---
+
+## 📖 Contoh Penggunaan (User Guide)
+
+Berikut adalah alur penggunaan dasar untuk peran Admin dan Siswa:
+
+### 👨‍💼 Skenario 1: Admin (Pustakawan)
+
+1.  **Login Admin:**
+    Buka `http://localhost:8000/login` dan masuk dengan akun admin (sesuai *UserSeeder*).
+2.  **Menambah Buku Baru:**
+    * Navigasi ke menu **Buku** atau `BookForm`.
+    * Klik "Tambah Buku", isi Judul, Penulis, Penerbit, dan Stok.
+    * Simpan.
+3.  **Melakukan Sirkulasi (Peminjaman):**
+    * Masuk ke menu **Sirkulasi**.
+    * Pilih nama Siswa dan Judul Buku yang akan dipinjam.
+    * Klik **Submit** untuk mencatat transaksi `borrow`.
+4.  **Proses Pengembalian:**
+    * Saat siswa mengembalikan buku, cari transaksi aktif mereka di menu Sirkulasi.
+    * Klik tombol **Kembalikan** (Return).
+    * Jika terlambat, sistem akan menampilkan nominal **Denda** yang harus dibayar.
+
+### 👨‍🎓 Skenario 2: Siswa (Member)
+
+1.  **Cek Profil & Level:**
+    * Login sebagai siswa.
+    * Di **Dashboard Siswa**, lihat *Progress Bar* level saat ini dan total XP yang dimiliki.
+2.  **Melihat Peringkat (Leaderboard):**
+    * Buka menu **Leaderboard**.
+    * Cek posisi Anda dibandingkan teman sekelas berdasarkan keaktifan membaca.
+3.  **Menyelesaikan Misi:**
+    * Cek notifikasi atau menu **Misi**.
+    * Contoh Misi: *"Pinjam 5 Buku bulan ini"*.
+    * Lakukan peminjaman buku untuk memenuhi target dan klaim poin tambahan.
+4.  **Riwayat Bacaan:**
+    * Akses menu **History** untuk melihat daftar buku yang pernah dibaca sebagai referensi pribadi.
