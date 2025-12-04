@@ -15,11 +15,19 @@ class CirculationForm extends Component
 {
     public $member_id, $book_id, $borrowed_at, $due_date;
     public $transaction_id, $return_condition = 'normal';
-    public $activeTab = 'borrow'; // borrow, pending, return, history
+    public $activeTab = 'borrow'; // borrow, pending, active, late, history
     public $search = '';
     public $rejectionReason = '';
     public $showRejectionModal = false;
     public $selectedTransactionId = null;
+    
+    // Search properties
+    public $memberSearch = '';
+    public $bookSearch = '';
+    public $selectedMemberName = '';
+    public $selectedBookName = '';
+    public $showMemberDropdown = false;
+    public $showBookDropdown = false;
 
     protected $rules = [
         'member_id' => 'required|exists:members,id',
@@ -36,8 +44,24 @@ class CirculationForm extends Component
 
     public function render()
     {
-        $members = Member::all();
-        $books = Book::where('stock', '>', 0)->get();
+        // Filter members based on search
+        $members = Member::query()
+            ->when($this->memberSearch, function($query) {
+                $query->where(function($q) {
+                    $q->where('name', 'like', '%' . $this->memberSearch . '%')
+                      ->orWhere('nis', 'like', '%' . $this->memberSearch . '%');
+                });
+            })
+            ->limit(10)
+            ->get();
+        
+        // Filter books based on search
+        $books = Book::where('stock', '>', 0)
+            ->when($this->bookSearch, function($query) {
+                $query->where('title', 'like', '%' . $this->bookSearch . '%');
+            })
+            ->limit(10)
+            ->get();
         
         // Pending transactions waiting for approval
         $pendingTransactions = Transaction::with(['member', 'book'])
@@ -51,9 +75,23 @@ class CirculationForm extends Component
             ->latest()
             ->get();
         
-        // Active transactions (approved and currently borrowed)
+        // Active transactions (approved and not yet late)
         $activeTransactions = Transaction::with(['member', 'book'])
             ->where('status', 'approved')
+            ->where('due_date', '>=', now())
+            ->when($this->search, function($query) {
+                $query->whereHas('member', function($q) {
+                    $q->where('name', 'like', '%' . $this->search . '%')
+                      ->orWhere('nis', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->latest()
+            ->get();
+        
+        // Late transactions (approved but past due date)
+        $lateTransactions = Transaction::with(['member', 'book'])
+            ->where('status', 'approved')
+            ->where('due_date', '<', now())
             ->when($this->search, function($query) {
                 $query->whereHas('member', function($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
@@ -80,6 +118,7 @@ class CirculationForm extends Component
             'books' => $books,
             'pendingTransactions' => $pendingTransactions,
             'activeTransactions' => $activeTransactions,
+            'lateTransactions' => $lateTransactions,
             'historyTransactions' => $historyTransactions,
         ]);
     }
@@ -243,11 +282,62 @@ class CirculationForm extends Component
         session()->flash('message', 'Pengembalian berhasil dicatat.');
     }
 
+    public function selectMember($memberId, $memberName)
+    {
+        $this->member_id = $memberId;
+        $this->selectedMemberName = $memberName;
+        $this->memberSearch = '';
+        $this->showMemberDropdown = false;
+    }
+    
+    public function selectBook($bookId)
+    {
+        $book = Book::find($bookId);
+        if ($book) {
+            $this->book_id = $bookId;
+            $this->selectedBookName = $book->title . ' (Stok: ' . $book->stock . ')';
+            $this->bookSearch = '';
+            $this->showBookDropdown = false;
+        }
+    }
+    
+    public function clearMemberSearch()
+    {
+        $this->member_id = '';
+        $this->selectedMemberName = '';
+        $this->memberSearch = '';
+        $this->showMemberDropdown = false;
+    }
+    
+    public function clearBookSearch()
+    {
+        $this->book_id = '';
+        $this->selectedBookName = '';
+        $this->bookSearch = '';
+        $this->showBookDropdown = false;
+    }
+    
+    public function updatedMemberSearch()
+    {
+        $this->showMemberDropdown = !empty($this->memberSearch);
+    }
+    
+    public function updatedBookSearch()
+    {
+        $this->showBookDropdown = !empty($this->bookSearch);
+    }
+
     private function resetInputFields()
     {
         $this->member_id = '';
         $this->book_id = '';
         $this->borrowed_at = now()->format('Y-m-d');
         $this->due_date = now()->addDays(7)->format('Y-m-d');
+        $this->selectedMemberName = '';
+        $this->selectedBookName = '';
+        $this->memberSearch = '';
+        $this->bookSearch = '';
+        $this->showMemberDropdown = false;
+        $this->showBookDropdown = false;
     }
 }

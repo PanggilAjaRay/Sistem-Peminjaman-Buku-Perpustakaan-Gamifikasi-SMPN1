@@ -4,12 +4,20 @@
             <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Manajemen Buku</h1>
             <p class="text-gray-500 mt-2">Kelola koleksi buku perpustakaan</p>
         </div>
-        <button wire:click="create()" class="inline-flex items-center px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Tambah Buku
-        </button>
+        <div class="flex gap-3">
+            <a href="/admin/categories" class="inline-flex items-center px-4 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-200 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+                Kelola Kategori
+            </a>
+            <button wire:click="create()" class="inline-flex items-center px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Tambah Buku
+            </button>
+        </div>
     </div>
 
     @if (session()->has('message'))
@@ -44,6 +52,7 @@
                     <tr class="border-b border-gray-100 bg-gray-50/50">
                         <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Cover</th>
                         <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Judul</th>
+                        <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">ISBN</th>
                         <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Penulis</th>
                         <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Penerbit</th>
                         <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Tahun</th>
@@ -69,6 +78,7 @@
                             <td class="p-4">
                                 <p class="font-medium text-gray-900">{{ $book->title }}</p>
                             </td>
+                            <td class="p-4 text-sm text-gray-600">{{ $book->isbn ?? '-' }}</td>
                             <td class="p-4 text-sm text-gray-600">{{ $book->author }}</td>
                             <td class="p-4 text-sm text-gray-600">{{ $book->publisher }}</td>
                             <td class="p-4 text-sm text-gray-600">{{ $book->year }}</td>
@@ -77,7 +87,7 @@
                                     {{ $book->stock }}
                                 </span>
                             </td>
-                            <td class="p-4 text-sm text-gray-600">{{ $book->category ?? '-' }}</td>
+                            <td class="p-4 text-sm text-gray-600">{{ $book->category->name ?? '-' }}</td>
                             <td class="p-4">
                                 <div class="flex items-center gap-2">
                                     <button wire:click="edit({{ $book->id }})" 
@@ -100,7 +110,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="p-12 text-center">
+                            <td colspan="9" class="p-12 text-center">
                                 <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                                     <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -140,11 +150,19 @@
                 <!-- Modal Body -->
                 <form wire:submit.prevent="store" class="p-6 space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Judul Buku</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Judul Buku <span class="text-red-500">*</span></label>
                         <input wire:model="title" type="text" 
                             class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150"
                             placeholder="Masukkan judul buku">
                         @error('title') <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ISBN</label>
+                        <input wire:model="isbn" type="text" 
+                            class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150"
+                            placeholder="Nomor ISBN (opsional)">
+                        @error('isbn') <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -185,37 +203,56 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Cover Buku</label>
-                        <input wire:model="cover_image" type="file" accept="image/*" 
+                        <input wire:model="cover_image" type="file" accept="image/jpeg,image/png,image/jpg,image/gif" 
                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer cursor-pointer">
                         @error('cover_image') <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p> @enderror
                         
-                        @if ($cover_image)
-                            <div class="mt-4 p-4 bg-gray-50 rounded-xl">
-                                <p class="text-sm font-medium text-gray-700 mb-2">Preview:</p>
-                                <img src="{{ $cover_image->temporaryUrl() }}" class="w-32 h-40 object-cover rounded-lg shadow-md">
+                        <!-- Loading State -->
+                        <div wire:loading wire:target="cover_image" class="mt-3">
+                            <div class="flex items-center p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                <svg class="animate-spin h-5 w-5 mr-3 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span class="text-sm font-medium text-blue-700">Mengunggah file...</span>
                             </div>
-                        @elseif ($old_cover_image)
-                            <div class="mt-4 p-4 bg-gray-50 rounded-xl">
-                                <p class="text-sm font-medium text-gray-700 mb-2">Cover saat ini:</p>
-                                <img src="{{ asset('storage/' . $old_cover_image) }}" class="w-32 h-40 object-cover rounded-lg shadow-md">
-                            </div>
-                        @endif
-                        
-                        <div wire:loading wire:target="cover_image" class="mt-2 flex items-center text-sm text-blue-600">
-                            <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Uploading...
+                        </div>
+
+                        <!-- Preview After Upload Complete -->
+                        <div wire:loading.remove wire:target="cover_image">
+                            @if ($cover_image)
+                                <div class="mt-4 p-4 bg-gray-50 rounded-xl">
+                                    <p class="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                                    @if(method_exists($cover_image, 'temporaryUrl'))
+                                        <img src="{{ $cover_image->temporaryUrl() }}" class="w-32 h-40 object-cover rounded-lg shadow-md">
+                                    @else
+                                        <div class="w-32 h-40 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-12 h-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                        <p class="text-xs text-green-600 mt-2">File siap diupload</p>
+                                    @endif
+                                </div>
+                            @elseif ($old_cover_image)
+                                <div class="mt-4 p-4 bg-gray-50 rounded-xl">
+                                    <p class="text-sm font-medium text-gray-700 mb-2">Cover saat ini:</p>
+                                    <img src="{{ asset('storage/' . $old_cover_image) }}" class="w-32 h-40 object-cover rounded-lg shadow-md">
+                                </div>
+                            @endif
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                        <input wire:model="category" type="text" 
-                            class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150"
-                            placeholder="Contoh: Fiksi, Non-Fiksi, Sains">
-                        @error('category') <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p> @enderror
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kategori <span class="text-red-500">*</span></label>
+                        <select wire:model="category_id"
+                            class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150">
+                            <option value="">Pilih Kategori</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('category_id') <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Modal Footer -->

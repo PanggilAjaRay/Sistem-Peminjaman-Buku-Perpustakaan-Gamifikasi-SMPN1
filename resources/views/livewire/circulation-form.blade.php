@@ -36,9 +36,13 @@
                 class="px-6 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap {{ $activeTab === 'pending' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
             Menunggu Approval
         </button>
-        <button wire:click="$set('activeTab', 'return')" 
-                class="px-6 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap {{ $activeTab === 'return' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
-            Pengembalian
+        <button wire:click="$set('activeTab', 'active')" 
+                class="px-6 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap {{ $activeTab === 'active' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
+            Peminjaman Aktif
+        </button>
+        <button wire:click="$set('activeTab', 'late')" 
+                class="px-6 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap {{ $activeTab === 'late' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
+            Peminjaman Terlambat
         </button>
         <button wire:click="$set('activeTab', 'history')" 
                 class="px-6 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap {{ $activeTab === 'history' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
@@ -54,23 +58,71 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Anggota</label>
-                        <select wire:model="member_id" class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150">
-                            <option value="">Pilih Anggota</option>
-                            @foreach($members as $member)
-                                <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->nis }})</option>
-                            @endforeach
-                        </select>
+                        <div class="relative">
+                            @if($selectedMemberName)
+                                <div class="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900">
+                                    <span class="flex-1">{{ $selectedMemberName }}</span>
+                                    <button type="button" wire:click="clearMemberSearch" class="text-gray-400 hover:text-gray-600 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            @else
+                                <input wire:model.live="memberSearch" 
+                                       type="text" 
+                                       placeholder="Cari nama atau NIS anggota..." 
+                                       class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150">
+                                
+                                @if($showMemberDropdown && count($members) > 0)
+                                    <div class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-auto">
+                                        @foreach($members as $member)
+                                            <button type="button" 
+                                                    wire:click="selectMember({{ $member->id }}, '{{ $member->name }} ({{ $member->nis }})')" 
+                                                    class="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0">
+                                                <div class="font-medium text-gray-900">{{ $member->name }}</div>
+                                                <div class="text-sm text-gray-500">NIS: {{ $member->nis }}</div>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            @endif
+                        </div>
                         @error('member_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Buku</label>
-                        <select wire:model="book_id" class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150">
-                            <option value="">Pilih Buku</option>
-                            @foreach($books as $book)
-                                <option value="{{ $book->id }}">{{ $book->title }} (Stok: {{ $book->stock }})</option>
-                            @endforeach
-                        </select>
+                        <div class="relative">
+                            @if($selectedBookName)
+                                <div class="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900">
+                                    <span class="flex-1">{{ $selectedBookName }}</span>
+                                    <button type="button" wire:click="clearBookSearch" class="text-gray-400 hover:text-gray-600 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            @else
+                                <input wire:model.live="bookSearch" 
+                                       type="text" 
+                                       placeholder="Cari judul buku..." 
+                                       class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150">
+                                
+                                @if($showBookDropdown && count($books) > 0)
+                                    <div class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-auto">
+                                         @foreach($books as $book)
+                                            <button type="button" 
+                                                    wire:click="selectBook({{ $book->id }})" 
+                                                    class="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0">
+                                                <div class="font-medium text-gray-900">{{ $book->title }}</div>
+                                                <div class="text-sm text-gray-500">Stok: {{ $book->stock }} | {{ $book->author }}</div>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            @endif
+                        </div>
                         @error('book_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
 
@@ -159,8 +211,8 @@
                 </table>
             </div>
         </div>
-    @elseif($activeTab === 'return')
-        <!-- Return List -->
+    @elseif($activeTab === 'active')
+        <!-- Active Borrowings List -->
         <div class="mb-4">
             <div class="relative w-full md:w-96">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -174,7 +226,7 @@
         </div>
 
         <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-6">Daftar Buku yang Dipinjam</h2>
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Daftar Peminjaman Aktif</h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -218,11 +270,6 @@
                                             Normal
                                         </button>
                                         <span class="text-gray-300">•</span>
-                                        <button wire:click="returnBook({{ $transaction->id }}, 'late')" 
-                                                class="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors">
-                                            Telat
-                                        </button>
-                                        <span class="text-gray-300">•</span>
                                         <button wire:click="returnBook({{ $transaction->id }}, 'damaged')" 
                                                 class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">
                                             Rusak
@@ -239,7 +286,80 @@
                 </table>
             </div>
         </div>
-    @else
+    @elseif($activeTab === 'late')
+        <!-- Late Borrowings List -->
+        <div class="mb-4">
+            <div class="relative w-full md:w-96">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input wire:model.live="search" type="text" placeholder="Cari nama atau NIS anggota..." 
+                    class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150 sm:text-sm">
+            </div>
+        </div>
+
+        <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Daftar Peminjaman Terlambat</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-100">
+                            <th class="pb-4 font-semibold text-gray-500 text-sm uppercase tracking-wider">Anggota</th>
+                            <th class="pb-4 font-semibold text-gray-500 text-sm uppercase tracking-wider">Buku</th>
+                            <th class="pb-4 font-semibold text-gray-500 text-sm uppercase tracking-wider">Tgl Pinjam</th>
+                            <th class="pb-4 font-semibold text-gray-500 text-sm uppercase tracking-wider">Jatuh Tempo</th>
+                            <th class="pb-4 font-semibold text-gray-500 text-sm uppercase tracking-wider">Keterlambatan</th>
+                            <th class="pb-4 font-semibold text-gray-500 text-sm uppercase tracking-wider">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @forelse($lateTransactions as $transaction)
+                            <tr class="group hover:bg-red-50/30 transition-colors duration-200">
+                                <td class="py-4 pr-4">
+                                    <div class="font-semibold text-gray-900">{{ $transaction->member->name }}</div>
+                                    <div class="text-sm text-gray-500">{{ $transaction->member->nis }}</div>
+                                </td>
+                                <td class="py-4 text-sm text-gray-600">{{ $transaction->book->title }}</td>
+                                <td class="py-4 text-sm text-gray-600">{{ \Carbon\Carbon::parse($transaction->borrowed_at)->format('d M Y') }}</td>
+                                <td class="py-4">
+                                    <span class="text-sm text-red-600 font-bold">
+                                        {{ \Carbon\Carbon::parse($transaction->due_date)->format('d M Y') }}
+                                    </span>
+                                </td>
+                                <td class="py-4">
+                                    @php
+                                        $daysLate = \Carbon\Carbon::parse($transaction->due_date)->diffInDays(now());
+                                    @endphp
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                                        {{ $daysLate }} hari
+                                    </span>
+                                </td>
+                                <td class="py-4">
+                                    <div class="flex gap-2">
+                                        <button wire:click="returnBook({{ $transaction->id }}, 'normal')" 
+                                                class="text-sm font-medium text-green-600 hover:text-green-700 transition-colors">
+                                            Normal
+                                        </button>
+                                        <span class="text-gray-300">•</span>
+                                        <button wire:click="returnBook({{ $transaction->id }}, 'damaged')" 
+                                                class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">
+                                            Rusak
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-12 text-center text-gray-500">Tidak ada peminjaman terlambat.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @elseif($activeTab === 'history')
         <!-- History List -->
         <div class="mb-4">
             <div class="relative w-full md:w-96">

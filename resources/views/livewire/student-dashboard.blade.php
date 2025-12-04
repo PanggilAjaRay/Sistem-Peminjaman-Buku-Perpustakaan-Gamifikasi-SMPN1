@@ -96,9 +96,10 @@
             <h2 class="text-xl font-bold text-gray-900">Katalog Buku</h2>
         </div>
         
-        <!-- Search -->
-        <div class="mb-6">
-            <div class="relative w-full md:w-96">
+        <!-- Search and Filter -->
+        <div class="mb-6 flex flex-col md:flex-row md:items-center gap-4">
+            <!-- Search -->
+            <div class="relative w-full md:w-[70%]">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -106,6 +107,17 @@
                 </div>
                 <input wire:model.live="search" type="text" placeholder="Cari buku berdasarkan judul atau penulis..." 
                     class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150 sm:text-sm">
+            </div>
+            
+            <!-- Category Filter -->
+            <div class="relative w-full md:w-[30%]">
+                <select wire:model.live="categoryFilter"
+                    class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition duration-150 sm:text-sm">
+                    <option value="">Semua Kategori</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
@@ -129,8 +141,18 @@
                     <!-- Book Info -->
                     <div class="p-4">
                         <h3 class="font-semibold text-gray-900 text-sm line-clamp-2 mb-1">{{ $book->title }}</h3>
-                        <p class="text-xs text-gray-500 mb-1">author: {{ $book->author }}</p>
-                        <p class="text-xs text-gray-400 mb-3">publisher: {{ $book->publisher }}</p>
+                        <p class="text-xs text-gray-500 mb-1">{{ $book->author }}</p>
+                        <p class="text-xs text-gray-400 mb-2">{{ $book->publisher }}</p>
+                        
+                        <!-- Category Badge -->
+                        @if($book->category)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200 mb-3">
+                                <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
+                                {{ $book->category->name }}
+                            </span>
+                        @endif
                         
                         <!-- Stock Badge -->
                         <div class="mb-3">
@@ -204,19 +226,10 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <h3 class="font-semibold text-gray-900 mb-1">{{ $mission->title }}</h3>
-                            <p class="text-sm text-gray-600 mb-2">{{ $mission->description }}</p>
-                            <div class="flex items-center justify-between">
+                            <p class="text-sm text-gray-600 mb-3">{{ $mission->description }}</p>
+                            <div class="flex items-center">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
-                                    {{ $mission->points }} Poin
-                                </span>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                    {{ $mission->pivot->status === 'completed' ? 'bg-green-100 text-green-800' : '' }}
-                                    {{ $mission->pivot->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : '' }}
-                                    {{ $mission->pivot->status === 'pending' ? 'bg-gray-100 text-gray-800' : '' }}">
-                                    {{ ucfirst($mission->pivot->status) }}
+                                    Reward: {{ $mission->reward_points }} Poin
                                 </span>
                             </div>
                         </div>

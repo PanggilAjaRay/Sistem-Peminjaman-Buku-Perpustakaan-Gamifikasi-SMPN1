@@ -8,7 +8,7 @@
 
     <!-- My Points Card -->
     @if($member)
-        <div class="card mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4">
+        <div class="card mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg">
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-2xl font-bold mb-2">{{ $member->name }}</h2>

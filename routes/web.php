@@ -6,6 +6,7 @@ use App\Livewire\AdminDashboard;
 use App\Livewire\StudentDashboard;
 use App\Livewire\StudentLeaderboard;
 use App\Livewire\BookForm;
+use App\Livewire\CategoryForm;
 use App\Livewire\MemberForm;
 use App\Livewire\MissionForm;
 use App\Livewire\CirculationForm;
@@ -37,6 +38,7 @@ Route::post('/logout', function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', AdminDashboard::class)->name('admin.dashboard');
     Route::get('/books', BookForm::class)->name('books');
+    Route::get('/admin/categories', CategoryForm::class)->name('categories');
     Route::get('/members', MemberForm::class)->name('members');
     Route::get('/missions', MissionForm::class)->name('missions');
     Route::get('/circulation', CirculationForm::class)->name('circulation');

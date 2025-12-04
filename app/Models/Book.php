@@ -8,16 +8,22 @@ class Book extends Model
 {
     protected $fillable = [
         'title',
+        'isbn',
         'author',
         'publisher',
         'year',
         'stock',
-        'category',
+        'category_id',
         'cover_image',
     ];
 
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Book;
+use App\Models\Category;
 use App\Models\Mission;
 use App\Models\Transaction;
 use App\Models\Member;
@@ -13,16 +14,31 @@ use Carbon\Carbon;
 class StudentDashboard extends Component
 {
     public $search = '';
+    public $categoryFilter = '';
 
     public function render()
     {
         $member = auth()->user()->member;
         
-        $books = Book::where('title', 'like', '%' . $this->search . '%')
-            ->orWhere('author', 'like', '%' . $this->search . '%')
-            ->paginate(12);
+        // Build books query with category filter
+        $booksQuery = Book::with('category')
+            ->where(function($query) {
+                $query->where('title', 'like', '%' . $this->search . '%')
+                    ->orWhere('author', 'like', '%' . $this->search . '%');
+            });
+        
+        // Apply category filter if selected
+        if ($this->categoryFilter) {
+            $booksQuery->where('category_id', $this->categoryFilter);
+        }
+        
+        $books = $booksQuery->paginate(12);
+        
+        // Get all categories for filter dropdown
+        $categories = Category::orderBy('name', 'asc')->get();
 
-        $missions = $member ? $member->missions()->get() : collect();
+        // Get all available missions (only active ones)
+        $missions = Mission::where('is_active', true)->orderBy('created_at', 'desc')->get();
         
         // Get active loans (approved)
         $activeLoans = $member ? Transaction::where('member_id', $member->id)
@@ -36,7 +52,7 @@ class StudentDashboard extends Component
             ->with('book')
             ->get() : collect();
 
-        return view('livewire.student-dashboard', compact('books', 'missions', 'activeLoans', 'pendingLoans'));
+        return view('livewire.student-dashboard', compact('books', 'categories', 'missions', 'activeLoans', 'pendingLoans'));
     }
 
     public function borrowBook($bookId)
