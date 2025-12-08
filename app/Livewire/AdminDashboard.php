@@ -25,7 +25,22 @@ class AdminDashboard extends Component
             ->take(5)
             ->get();
 
-        return view('livewire.admin-dashboard', compact('stats', 'recentMembers', 'recentTransactions'));
+        // Get leaderboard data (top 10 students by points)
+        $leaderboard = \Illuminate\Support\Facades\DB::table('points')
+            ->select('member_id', \Illuminate\Support\Facades\DB::raw('SUM(amount) as total_points'))
+            ->groupBy('member_id')
+            ->orderByDesc('total_points')
+            ->take(10)
+            ->get()
+            ->map(function($item) {
+                $member = Member::find($item->member_id);
+                return [
+                    'member' => $member,
+                    'total_points' => $item->total_points
+                ];
+            });
+
+        return view('livewire.admin-dashboard', compact('stats', 'recentMembers', 'recentTransactions', 'leaderboard'));
     }
 
     public function logout()

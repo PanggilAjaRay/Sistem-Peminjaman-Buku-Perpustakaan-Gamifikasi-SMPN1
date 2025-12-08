@@ -27,7 +27,165 @@
         </div>
     @endif
 
-    <!-- Pending Loans -->
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ $overdueLoans->count() > 0 ? '4' : '3' }} gap-6 mb-8">
+        <!-- Keterlambatan Card (only shown if there are overdue loans) -->
+        @if($overdueLoans->count() > 0)
+        <a href="{{ route('student.fines') }}" class="block bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl shadow-sm border border-red-200 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-red-700">Keterlambatan</h3>
+                <svg class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </div>
+            <div class="space-y-3">
+                @foreach($overdueLoans->take(2) as $loan)
+                    <div class="bg-white rounded-xl p-4 border border-red-200">
+                        <div class="flex items-start mb-2">
+                            <div class="flex-shrink-0 w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-semibold text-gray-900 text-sm truncate">{{ $loan->book->title }}</h4>
+                                <p class="text-xs text-gray-500 mt-0.5">{{ $loan->book->author }}</p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-red-600 space-y-0.5">
+                            <p><b>Jatuh tempo: {{ $loan->due_date->format('d M Y') }}</b></p>
+                            <p class="font-semibold">Terlambat {{ abs(ceil($loan->due_date->diffInDays(now(), false))) }} hari</p>
+                        </div>
+                    </div>
+                @endforeach
+                @if($overdueLoans->count() > 2)
+                    <p class="text-xs text-red-600 text-center font-medium">+{{ $overdueLoans->count() - 2 }} buku lainnya terlambat</p>
+                @endif
+                <div class="mt-3 pt-3 border-t border-red-200">
+                    <p class="text-xs text-red-700 font-medium flex items-center justify-center">
+                        Klik untuk lihat riwayat denda
+                        <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    </p>
+                </div>
+            </div>
+        </a>
+        @endif
+
+        <!-- Peminjaman Aktif Card -->
+        <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Peminjaman Aktif</h3>
+            @if($activeLoans->count() > 0)
+                <div class="space-y-3">
+                    @foreach($activeLoans->take(2) as $loan)
+                        <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                            <div class="flex items-start mb-2">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-semibold text-gray-900 text-sm truncate">{{ $loan->book->title }}</h4>
+                                    <p class="text-xs text-gray-500 mt-0.5">{{ $loan->book->author }}</p>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-600 space-y-0.5">
+                                <p>Dipinjam: {{ $loan->borrowed_at->format('d M Y') }}</p>
+                                <p><b>Jatuh tempo: {{ $loan->due_date->format('d M Y') }}</b></p>
+                            </div>
+                        </div>
+                    @endforeach
+                    @if($pendingLoans->count() > 0)
+                        <div class="mt-3 pt-3 border-t border-gray-100">
+                            <div class="flex items-center text-yellow-600">
+                                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="text-sm font-medium">{{ $pendingLoans->count() }} Menunggu Approval</span>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <p class="text-sm text-gray-500">Tidak ada peminjaman aktif</p>
+                    @if($pendingLoans->count() > 0)
+                        <div class="mt-3 pt-3 border-t border-gray-100">
+                            <div class="flex items-center justify-center text-yellow-600">
+                                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="text-sm font-medium">{{ $pendingLoans->count() }} Menunggu Approval</span>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @endif
+        </div>
+
+        <!-- Point Saya Card -->
+        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-sm border border-purple-100 p-6 hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+            <div class="flex items-center justify-between mb-2">
+                
+            </div>
+            <div class="text-center">
+                <p class="text-xl font-medium text-purple-700 mb-2">Point Saya</p>
+                <p class="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">{{ number_format($totalPoints) }}</p>
+                <span class="text-sm text-purple-600">Poin</span>
+                <p class="text-xs text-purple-600 mt-3">Total poin yang terkumpul</p>
+            </div>
+        </div>
+
+        <!-- Misi Saya Card -->
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-sm border border-green-100 p-6 hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Misi Saya</h3>
+            @if($missions->count() > 0)
+                <div class="space-y-3">
+                    @foreach($missions->take(1) as $mission)
+                        <div class="bg-white rounded-xl p-4 border border-green-200">
+                            <div class="flex items-start mb-2">
+                                <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-semibold text-gray-900 text-sm truncate">{{ $mission->title }}</h4>
+                                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">{{ $mission->description }}</p>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    Reward: {{ $mission->reward_points }} Poin
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                    @if($missions->count() > 1)
+                        <p class="text-xs text-green-600 text-center">+{{ $missions->count() - 1 }} misi lainnya</p>
+                    @endif
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
+                    </div>
+                    <p class="text-sm text-gray-500">Tidak ada misi tersedia</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Pending Loans Details -->
     @if($pendingLoans->count() > 0)
         <div class="bg-yellow-50 border border-yellow-100 rounded-2xl p-6 mb-6">
             <div class="flex items-center mb-4">
@@ -62,33 +220,6 @@
         </div>
     @endif
 
-    <!-- Active Loans -->
-    @if($activeLoans->count() > 0)
-        <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Peminjaman Aktif</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach($activeLoans as $loan)
-                    <div class="bg-blue-50 rounded-xl p-4 border border-blue-100 hover:shadow-md transition-shadow duration-200">
-                        <div class="flex items-start mb-3">
-                            <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                </svg>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="font-semibold text-gray-900 text-sm truncate">{{ $loan->book->title }}</h3>
-                                <p class="text-xs text-gray-500 mt-0.5">{{ $loan->book->author }}</p>
-                            </div>
-                        </div>
-                        <div class="space-y-1">
-                            <p class="text-xs text-gray-600">Dipinjam: {{ $loan->borrowed_at->format('d M Y') }}</p>
-                            <p class="text-xs text-gray-600">Jatuh tempo: {{ $loan->due_date->format('d M Y') }}</p>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
 
     <!-- Book Catalog -->
     <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
@@ -212,39 +343,4 @@
         </div>
     </div>
 
-    <!-- Missions -->
-    <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Misi Saya</h2>
-        <div class="space-y-3">
-            @forelse($missions as $mission)
-                <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100 hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-semibold text-gray-900 mb-1">{{ $mission->title }}</h3>
-                            <p class="text-sm text-gray-600 mb-3">{{ $mission->description }}</p>
-                            <div class="flex items-center">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    Reward: {{ $mission->reward_points }} Poin
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="text-center py-8">
-                    <div class="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">
-                        <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                        </svg>
-                    </div>
-                    <p class="text-gray-500 font-medium">Belum ada misi yang tersedia</p>
-                </div>
-            @endforelse
-        </div>
-    </div>
-</div>
+    

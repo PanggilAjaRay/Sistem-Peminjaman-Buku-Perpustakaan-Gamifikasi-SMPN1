@@ -11,7 +11,7 @@
         <div class="card mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-2xl font-bold mb-2">{{ $member->name }}</h2>
+                    <h2 class="text-2xl text-blue-100 font-bold mb-2">{{ $member->name }}</h2>
                     <p class="text-blue-100">{{ $member->nis }} • {{ $member->class }}</p>
                 </div>
                 <div class="text-right">

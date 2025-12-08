@@ -9,6 +9,7 @@ use App\Models\Member;
 use App\Models\Mission;
 use App\Models\Point;
 use App\Models\Fine;
+use App\Models\PenaltySetting;
 use Carbon\Carbon;
 
 class CirculationForm extends Component
@@ -253,33 +254,146 @@ class CirculationForm extends Component
     {
         $transaction = Transaction::findOrFail($transactionId);
         $transaction->returned_at = now();
-        $transaction->status = 'returned';
+        
+        // Handle lost books differently - don't change status to returned
+        if ($condition === 'lost') {
+            $transaction->status = 'lost';
+        } else {
+            $transaction->status = 'returned';
+        }
+        
         $transaction->save();
 
-        // Increase book stock
-        $book = Book::find($transaction->book_id);
-        $book->increment('stock');
+        // Increase book stock only if not lost
+        if ($condition !== 'lost') {
+            $book = Book::find($transaction->book_id);
+            $book->increment('stock');
+        }
 
-        // Calculate fine if late or damaged
-        if ($condition === 'late') {
+        // Apply penalties based on condition
+        $member = Member::find($transaction->member_id);
+        
+        if ($condition === 'late' || Carbon::parse($transaction->due_date)->lt(now())) {
+            // Calculate days late
             $daysLate = Carbon::parse($transaction->due_date)->diffInDays(now(), false);
+            
             if ($daysLate > 0) {
-                $fineAmount = $daysLate * 1000; // Rp 1,000 per day
+                $penalty = PenaltySetting::calculateLatePenalty($daysLate);
+                
+                if ($penalty['type'] === 'points' && $penalty['points'] > 0) {
+                    // Round values for display
+                    $daysLateRounded = round($daysLate);
+                    $pointsRounded = round($penalty['points']);
+                    
+                    // Deduct points (negative point entry)
+                    Point::create([
+                        'member_id' => $transaction->member_id,
+                        'amount' => -$penalty['points'],
+                        'reason' => "Denda keterlambatan {$daysLateRounded} hari",
+                    ]);
+                    
+                    // Record fine with point deduction
+                    Fine::create([
+                        'transaction_id' => $transaction->id,
+                        'penalty_type' => 'late_return',
+                        'amount' => 0,
+                        'points_deducted' => $penalty['points'],
+                        'description' => "Keterlambatan {$daysLateRounded} hari - Pengurangan {$pointsRounded} point",
+                        'status' => 'paid', // Points already deducted
+                    ]);
+                } elseif ($penalty['type'] === 'money' && $penalty['amount'] > 0) {
+                    // Round values for display
+                    $daysLateRounded = round($daysLate);
+                    
+                    // Create monetary fine
+                    Fine::create([
+                        'transaction_id' => $transaction->id,
+                        'penalty_type' => 'late_return',
+                        'amount' => $penalty['amount'],
+                        'points_deducted' => 0,
+                        'description' => "Keterlambatan {$daysLateRounded} hari - Denda Rp " . number_format($penalty['amount'], 0, ',', '.'),
+                        'status' => 'unpaid',
+                    ]);
+                }
+            }
+        } 
+        
+        if ($condition === 'damaged') {
+            $penalty = PenaltySetting::calculateDamagedPenalty();
+            
+            if ($penalty['type'] === 'points' && $penalty['points'] > 0) {
+                // Round values for display
+                $pointsRounded = round($penalty['points']);
+                
+                // Deduct points
+                Point::create([
+                    'member_id' => $transaction->member_id,
+                    'amount' => -$penalty['points'],
+                    'reason' => "Denda buku rusak",
+                ]);
+                
                 Fine::create([
                     'transaction_id' => $transaction->id,
-                    'amount' => $fineAmount,
+                    'penalty_type' => 'damaged_book',
+                    'amount' => 0,
+                    'points_deducted' => $penalty['points'],
+                    'description' => "Buku rusak - Pengurangan {$pointsRounded} point",
+                    'status' => 'paid',
+                ]);
+            } elseif ($penalty['type'] === 'money' && $penalty['amount'] > 0) {
+                Fine::create([
+                    'transaction_id' => $transaction->id,
+                    'penalty_type' => 'damaged_book',
+                    'amount' => $penalty['amount'],
+                    'points_deducted' => 0,
+                    'description' => "Buku rusak - Denda Rp " . number_format($penalty['amount'], 0, ',', '.'),
                     'status' => 'unpaid',
                 ]);
             }
-        } elseif ($condition === 'damaged') {
-            Fine::create([
-                'transaction_id' => $transaction->id,
-                'amount' => 10000, // Rp 10,000 for damaged book
-                'status' => 'unpaid',
-            ]);
+        }
+        
+        if ($condition === 'lost') {
+            $penalty = PenaltySetting::calculateLostPenalty();
+            
+            if ($penalty['type'] === 'points' && $penalty['points'] > 0) {
+                // Round values for display
+                $pointsRounded = round($penalty['points']);
+                
+                // Deduct points
+                Point::create([
+                    'member_id' => $transaction->member_id,
+                    'amount' => -$penalty['points'],
+                    'reason' => "Denda buku hilang",
+                ]);
+                
+                Fine::create([
+                    'transaction_id' => $transaction->id,
+                    'penalty_type' => 'lost_book',
+                    'amount' => 0,
+                    'points_deducted' => $penalty['points'],
+                    'description' => "Buku hilang - Pengurangan {$pointsRounded} point",
+                    'status' => 'paid',
+                ]);
+            } elseif ($penalty['type'] === 'money' && $penalty['amount'] > 0) {
+                Fine::create([
+                    'transaction_id' => $transaction->id,
+                    'penalty_type' => 'lost_book',
+                    'amount' => $penalty['amount'],
+                    'points_deducted' => 0,
+                    'description' => "Buku hilang - Denda Rp " . number_format($penalty['amount'], 0, ',', '.'),
+                    'status' => 'unpaid',
+                ]);
+            }
         }
 
-        session()->flash('message', 'Pengembalian berhasil dicatat.');
+        $conditionText = [
+            'normal' => 'normal',
+            'late' => 'terlambat',
+            'damaged' => 'rusak',
+            'lost' => 'hilang',
+        ];
+
+        session()->flash('message', 'Pengembalian berhasil dicatat dengan kondisi: ' . ($conditionText[$condition] ?? 'normal') . '.');
     }
 
     public function selectMember($memberId, $memberName)

@@ -8,7 +8,10 @@ class Fine extends Model
 {
     protected $fillable = [
         'transaction_id',
+        'penalty_type',
         'amount',
+        'points_deducted',
+        'description',
         'status',
     ];
 

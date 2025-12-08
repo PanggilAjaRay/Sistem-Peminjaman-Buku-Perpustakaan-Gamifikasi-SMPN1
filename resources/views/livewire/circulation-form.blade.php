@@ -271,8 +271,14 @@
                                         </button>
                                         <span class="text-gray-300">•</span>
                                         <button wire:click="returnBook({{ $transaction->id }}, 'damaged')" 
-                                                class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">
+                                                class="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors">
                                             Rusak
+                                        </button>
+                                        <span class="text-gray-300">•</span>
+                                        <button wire:click="returnBook({{ $transaction->id }}, 'lost')" 
+                                                class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors"
+                                                onclick="return confirm('Yakin buku hilang? Stok tidak akan bertambah.')">
+                                            Hilang
                                         </button>
                                     </div>
                                 </td>
@@ -330,7 +336,7 @@
                                 </td>
                                 <td class="py-4">
                                     @php
-                                        $daysLate = \Carbon\Carbon::parse($transaction->due_date)->diffInDays(now());
+                                        $daysLate = abs(ceil(\Carbon\Carbon::parse($transaction->due_date)->diffInDays(now(), false)));
                                     @endphp
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">
                                         {{ $daysLate }} hari
@@ -344,8 +350,14 @@
                                         </button>
                                         <span class="text-gray-300">•</span>
                                         <button wire:click="returnBook({{ $transaction->id }}, 'damaged')" 
-                                                class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">
+                                                class="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors">
                                             Rusak
+                                        </button>
+                                        <span class="text-gray-300">•</span>
+                                        <button wire:click="returnBook({{ $transaction->id }}, 'lost')" 
+                                                class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors"
+                                                onclick="return confirm('Yakin buku hilang? Stok tidak akan bertambah.')">
+                                            Hilang
                                         </button>
                                     </div>
                                 </td>

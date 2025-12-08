@@ -10,6 +10,7 @@ use App\Livewire\CategoryForm;
 use App\Livewire\MemberForm;
 use App\Livewire\MissionForm;
 use App\Livewire\CirculationForm;
+use App\Livewire\PenaltySettings;
 
 // Redirect root based on authentication
 Route::get('/', function () {
@@ -42,6 +43,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/members', MemberForm::class)->name('members');
     Route::get('/missions', MissionForm::class)->name('missions');
     Route::get('/circulation', CirculationForm::class)->name('circulation');
+    Route::get('/penalty-settings', PenaltySettings::class)->name('penalty.settings');
 });
 
 // Student routes (protected by auth and student middleware)
@@ -49,4 +51,5 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/student', StudentDashboard::class)->name('student.dashboard');
     Route::get('/student/history', \App\Livewire\StudentHistory::class)->name('student.history');
     Route::get('/student/leaderboard', StudentLeaderboard::class)->name('student.leaderboard');
+    Route::get('/student/fines', \App\Livewire\StudentFines::class)->name('student.fines');
 });

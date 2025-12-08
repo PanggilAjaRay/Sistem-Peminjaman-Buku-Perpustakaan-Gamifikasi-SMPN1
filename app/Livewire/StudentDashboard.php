@@ -52,7 +52,20 @@ class StudentDashboard extends Component
             ->with('book')
             ->get() : collect();
 
-        return view('livewire.student-dashboard', compact('books', 'categories', 'missions', 'activeLoans', 'pendingLoans'));
+        // Get overdue loans (loans where due_date <= today)
+        $overdueLoans = $member ? Transaction::where('member_id', $member->id)
+            ->where('status', 'approved')
+            ->whereDate('due_date', '<=', Carbon::now()->toDateString())
+            ->with('book')
+            ->get() : collect();
+
+        // Get total points for the student
+        $totalPoints = $member ? Point::where('member_id', $member->id)->sum('amount') : 0;
+        
+        // Count active missions
+        $missionsCount = $missions->count();
+
+        return view('livewire.student-dashboard', compact('books', 'categories', 'missions', 'activeLoans', 'pendingLoans', 'overdueLoans', 'totalPoints', 'missionsCount'));
     }
 
     public function borrowBook($bookId)
