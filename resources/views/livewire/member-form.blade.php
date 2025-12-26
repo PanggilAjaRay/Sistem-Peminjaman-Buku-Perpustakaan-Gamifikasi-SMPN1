@@ -4,12 +4,26 @@
             <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Manajemen Anggota</h1>
             <p class="text-gray-500 mt-2">Kelola data siswa perpustakaan</p>
         </div>
-        <button wire:click="create()" class="inline-flex items-center px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Tambah Anggota
-        </button>
+        <div class="flex gap-3">
+            <button wire:click="exportToExcel" class="inline-flex items-center px-4 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-200 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Ekspor ke Excel
+            </button>
+            <button wire:click="openImportModal" class="inline-flex items-center px-4 py-2.5 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all duration-200 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                Import dari Excel
+            </button>
+            <button wire:click="create()" class="inline-flex items-center px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Tambah Anggota
+            </button>
+        </div>
     </div>
 
     @if (session()->has('message'))
@@ -229,6 +243,134 @@
                         </svg>
                         Tutup
                     </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Import Modal -->
+    @if($showImportModal)
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <div class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 rounded-t-2xl">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">Import Data Siswa</h2>
+                            <p class="text-sm text-gray-500 mt-1">Upload file Excel (.xlsx) untuk import data</p>
+                        </div>
+                        <button wire:click="closeImportModal()" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-6 space-y-5">
+                    <!-- Download Template -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                        <div class="flex items-start">
+                            <svg class="h-5 w-5 text-blue-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm text-blue-700 font-medium mb-2">Belum punya template?</p>
+                                <p class="text-sm text-blue-600 mb-3">Download template Excel terlebih dahulu untuk memastikan format data yang benar.</p>
+                                <button wire:click="downloadTemplate" class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-700 bg-white rounded-lg border border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors duration-150">
+                                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Download Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Upload File Excel</label>
+                        <div class="flex items-center justify-center w-full">
+                            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-150">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk upload</span> atau drag & drop</p>
+                                    <p class="text-xs text-gray-500">File Excel (.xlsx) maksimal 10MB</p>
+                                </div>
+                                <input wire:model="importFile" type="file" accept=".xlsx" class="hidden" />
+                            </label>
+                        </div>
+                        @if($importFile)
+                            <p class="mt-2 text-sm text-green-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                                File terpilih: {{ $importFile->getClientOriginalName() }}
+                            </p>
+                        @endif
+                        @error('importFile') <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    <!-- Import Results -->
+                    @if($showImportResults)
+                        <div class="space-y-3">
+                            @if($importResults['success'] > 0)
+                                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                                    <div class="flex items-center">
+                                        <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <p class="text-green-700 font-medium">{{ $importResults['success'] }} anggota berhasil diimpor</p>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if(count($importResults['errors']) > 0)
+                                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                                    <div class="flex items-start">
+                                        <svg class="h-5 w-5 text-red-500 mr-3 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <div class="flex-1">
+                                            <p class="text-red-700 font-medium mb-2">{{ $importResults['skipped'] }} baris gagal diimpor:</p>
+                                            <ul class="text-sm text-red-600 space-y-1 max-h-40 overflow-y-auto">
+                                                @foreach($importResults['errors'] as $error)
+                                                    <li>• {{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    <!-- Format Instructions -->
+                    <div class="bg-gray-50 rounded-xl p-4">
+                        <p class="text-sm font-medium text-gray-700 mb-2">Format File Excel:</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• Header: <span class="font-mono text-xs bg-white px-1 rounded">Nama | NIS | Kelas | Tanggal Lahir | Email | Telepon</span></li>
+                            <li>• Field wajib: Nama, NIS, Kelas, Tanggal Lahir</li>
+                            <li>• Format tanggal: YYYY-MM-DD (contoh: 2010-05-15)</li>
+                            <li>• NIS harus unik (tidak boleh duplikat)</li>
+                        </ul>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <button type="button" wire:click="closeImportModal()" 
+                            class="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500/20 transition-colors duration-150">
+                            Batal
+                        </button>
+                        <button wire:click="importFromExcel" 
+                            class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-amber-600 rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all duration-150 shadow-sm"
+                            @if(!$importFile) disabled @endif>
+                            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            Import Data
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

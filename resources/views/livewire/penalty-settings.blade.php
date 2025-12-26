@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 ml-64">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 ml-24">
     <div class="p-8">
         <!-- Header -->
         <div class="mb-8">
