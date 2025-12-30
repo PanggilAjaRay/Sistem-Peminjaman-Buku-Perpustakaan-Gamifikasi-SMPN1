@@ -1,7 +1,7 @@
 <div>
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Dashboard Siswa</h1>
-        <p class="text-gray-500 mt-2 text-lg">Selamat datang, {{ auth()->user()->name }}</p>
+    <div class="mb-6 md:mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Dashboard Siswa</h1>
+        <p class="text-gray-500 mt-1 md:mt-2 text-base md:text-lg">Selamat datang, {{ auth()->user()->name }}</p>
     </div>
 
     <!-- Success/Error Messages -->
@@ -28,7 +28,7 @@
     @endif
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ $overdueLoans->count() > 0 ? '4' : '3' }} gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 {{ $overdueLoans->count() > 0 ? 'lg:grid-cols-4' : 'lg:grid-cols-3' }} gap-4 md:gap-6 mb-6 md:mb-8">
         <!-- Keterlambatan Card (only shown if there are overdue loans) -->
         @if($overdueLoans->count() > 0)
         <a href="{{ route('student.fines') }}" class="block bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl shadow-sm border border-red-200 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer">
@@ -222,7 +222,7 @@
 
 
     <!-- Book Catalog -->
-    <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+    <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-6">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold text-gray-900">Katalog Buku</h2>
         </div>

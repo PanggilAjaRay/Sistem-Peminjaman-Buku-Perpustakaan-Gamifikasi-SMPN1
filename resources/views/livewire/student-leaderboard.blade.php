@@ -1,14 +1,12 @@
 <div>
-    <div class="dashboard-header">
-        <div>
-            <h1 class="text-xl font-bold">🏆 Leaderboard</h1>
-            <p class="text-muted">Peringkat Siswa Berdasarkan Poin</p>
-        </div>
+    <div class="mb-6 md:mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">🏆 Leaderboard</h1>
+        <p class="text-gray-500 mt-1 md:mt-2 text-base md:text-lg">Peringkat Siswa Berdasarkan Poin</p>
     </div>
 
     <!-- My Points Card -->
     @if($member)
-        <div class="card mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg">
+        <div class="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 md:p-6 rounded-2xl shadow-lg shadow-blue-500/20">
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-2xl text-blue-100 font-bold mb-2">{{ $member->name }}</h2>
@@ -27,8 +25,8 @@
     @endif
 
     <!-- Leaderboard -->
-    <div class="card">
-        <h2 class="text-lg font-bold mb-4">🏅 Peringkat Semua Siswa</h2>
+    <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6">
+        <h2 class="text-lg font-bold mb-4 text-gray-900">🏅 Peringkat Semua Siswa</h2>
         <div class="space-y-3">
             @forelse($leaderboard as $index => $item)
                 <div class="flex items-center justify-between p-4 rounded-lg transition-all {{ $item['member']->id === $member->id ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-500 shadow-md' : 'bg-gray-50 hover:bg-gray-100' }}">

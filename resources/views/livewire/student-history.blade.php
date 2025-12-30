@@ -1,10 +1,10 @@
 <div>
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Riwayat Peminjaman</h1>
-        <p class="text-gray-500 mt-2 text-lg">Pantau status dan riwayat buku yang Anda pinjam.</p>
+    <div class="mb-6 md:mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Riwayat Peminjaman</h1>
+        <p class="text-gray-500 mt-1 md:mt-2 text-base md:text-lg">Pantau status dan riwayat buku yang Anda pinjam.</p>
     </div>
 
-    <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-6">
+    <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6">
         <!-- Search -->
         <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="relative w-full md:w-96">

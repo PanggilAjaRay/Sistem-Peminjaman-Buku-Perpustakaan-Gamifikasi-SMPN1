@@ -1,6 +1,8 @@
-<div class="fixed inset-y-0 left-0 w-64 bg-white/80 backdrop-blur-xl border-r border-gray-100 shadow-sm flex flex-col z-50">
+<div 
+    :class="sidebarOpen ? 'translate-x-0 layer-shadow' : '-translate-x-full'"
+    class="fixed inset-y-0 left-0 w-64 bg-white/80 backdrop-blur-xl border-r border-gray-100 shadow-sm flex flex-col z-50 transform transition-transform duration-300 md:translate-x-0">
     <!-- Header -->
-    <div class="px-6 py-5 border-b border-gray-100">
+    <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
         <div class="flex items-center">
             <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -12,6 +14,12 @@
                 <p class="text-xs text-gray-500">SMPN 1 Prembun</p>
             </div>
         </div>
+        <!-- Mobile Close Button -->
+        <button @click="sidebarOpen = false" class="md:hidden p-2 -mr-2 text-gray-400 hover:text-gray-600 focus:outline-none">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
     </div>
 
     <!-- User Profile -->

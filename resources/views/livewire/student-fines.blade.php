@@ -1,11 +1,11 @@
 <div>
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Riwayat Denda</h1>
-        <p class="text-gray-500 mt-2 text-lg">Daftar denda dan penalti yang terkait dengan peminjaman Anda</p>
+    <div class="mb-6 md:mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Riwayat Denda</h1>
+        <p class="text-gray-500 mt-1 md:mt-2 text-base md:text-lg">Daftar denda dan penalti yang terkait dengan peminjaman Anda</p>
     </div>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
         <!-- Total Unpaid Fines -->
         <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl shadow-sm border border-red-200 p-6 hover:shadow-md hover:-translate-y-1 transition-all duration-200">
             <div class="flex items-center mb-2">
@@ -50,7 +50,7 @@
     </div>
 
     <!-- Fines Table -->
-    <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-6">
+    <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6">
         <h2 class="text-xl font-bold text-gray-900 mb-6">Daftar Denda</h2>
         
         @if($fines->count() > 0)
